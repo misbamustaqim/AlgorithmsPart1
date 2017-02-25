@@ -1,0 +1,64 @@
+
+public class FindConnectivity
+				{
+					public int[] member;
+					public int[] sz;
+					
+					public FindConnectivity(int numberOfMembers)
+					{
+								member = new int[numberOfMembers];
+								sz =  new int[numberOfMembers];
+								for (int i = 0; i < member.length; i++)
+								{
+											member[i] = i ;
+											sz[i] = 1;
+								}
+					}
+					
+					public void Union( int p , int q)
+					{
+								int i = RootOf( p );
+								int j = RootOf( q );
+								if ( i == j)
+								{
+										return ;
+								}
+					
+								if( sz[ i ] > sz[ j ] )
+								{ 
+										
+										member[j] = i ; 
+										sz[i] += sz[j];
+								}
+								else
+								{ 
+										member[i] = j ; 
+										sz[j] += sz[i];
+										
+								}
+								for (int j2 = 0; j2 < member.length; j2++) 
+								{
+									System.out.println("  " +member[j2]);
+								}
+								
+					}
+				
+					public int RootOf( int i )
+					{
+								while( i != member[ i ])
+								{
+										member[ i ] = member[ member [ i ] ];
+										i = member[ i ] ;
+								}
+								return i;
+					}
+					
+					public boolean IsConnected(int p, int q )
+					{
+								if(RootOf(p) == RootOf(q))
+								{
+										return true;
+								}
+								return false;
+					}
+}

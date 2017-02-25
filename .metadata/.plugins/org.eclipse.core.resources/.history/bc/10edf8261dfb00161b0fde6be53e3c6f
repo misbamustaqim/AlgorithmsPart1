@@ -1,0 +1,154 @@
+/*  Given a composite systems comprised of randomly distributed insulating and metallic materials: what fraction of the materials
+ *  need to be metallic so that the composite system is an electrical conductor? Given a porous landscape with water on the surface
+ *   (or oil below), under what conditions will the water be able to drain through to the bottom (or the oil to gush through to the surface)? 
+ *   Scientists have defined an abstract process known as percolation to model such situations.*/
+public class Percolation
+{
+				   public boolean[][] grid;
+				   static int sizeOfGrid = 4;
+				   static int count = 0;
+				   static private FindConnectivity connect ;
+				   static boolean isPercolated;
+				   public Percolation(int n)                // create n-by-n grid, with all sites blocked
+				   {
+					   		connect = new FindConnectivity(sizeOfGrid);
+					   		isPercolated = false;
+					   		grid =  new boolean[n][n];
+					   		for (int i = 0; i < grid.length; i++)
+					   		{
+					   			for (int j = 0; j < grid[i].length; j++)
+					   			{
+									  grid[i][j] = false;
+									//  grid[i][j] = j + 1;
+								}
+							}
+					   		
+				   }
+				   public void open(int row, int col)    // open site (row, col) if it is not open already
+				   {
+					   		row = row - 1 ;
+					   		col = col -1;
+					   		if(isOpen(row + 1, col + 1))
+					   		{
+					   				return;
+					   		}
+					   		else
+					   		{
+								   		grid[ row ][ col ] = true;
+								   		count++;
+										   		
+										if (isOpen(row - 1, col))
+										{
+												connect.Union(GetIndex(row, col), GetIndex(row - 1, col));
+												row = row - 1;
+											
+										}  
+										if (isOpen(row + 1, col))
+										{
+												connect.Union(GetIndex(row, col), GetIndex(row + 1, col));
+												row = row + 1;
+											
+										}
+										 
+						   				if (isOpen(row, col - 1))
+						   				{
+												connect.Union(GetIndex(row, col), GetIndex(row, col - 1));
+												col = col - 1;
+												
+										} 
+						   				if (isOpen(row, col + 1)) 
+						   				{
+												connect.Union(GetIndex(row, col), GetIndex(row, col + 1));
+												col = col + 1;
+						   				}
+								
+							}
+					
+					   		if ( (row == 0) || ( row == sizeOfGrid ) )
+					   		{
+										if (CheckIfPercolated(row , col) == true)
+										{
+											System.out.println(" Percolates");
+											return;
+										}
+							}
+				   }
+				   
+				   public boolean isOpen(int row, int col)  // is site (row, col) open?
+				   {
+					   		if (grid[ row - 1 ][ col - 1] == true) 
+					   		{
+					   			   return true;
+							}
+							return false;
+				   }
+				   public boolean isFull(int row, int col)  // is site (row, col) full?
+				   {
+					   			if (numberOfOpenSites() == sizeOfGrid * sizeOfGrid) 
+					   			{
+					   					return true;
+								}
+					   			return false;
+					   
+				   }
+				   public int numberOfOpenSites()       // number of open sites
+				   {
+					   		return count;
+				   }
+				   public boolean percolates()              // does the system percolate?
+				   {
+					   		return isPercolated;
+				   }
+				   
+				   private boolean CheckIfPercolated( int row , int col )
+				   {
+					   	if(row == 1) 
+					   	{
+					   		for (int i = GetIndex(sizeOfGrid, 1) ; i <= GetIndex(sizeOfGrid, sizeOfGrid); i++) 
+					   		{
+					   			if ( connect.IsConnected( GetIndex(row, col), i ) ==  true ) 
+						   		{
+					   						isPercolated = true;
+					   						return true;
+						   		}
+							}
+					   	}
+					   	else
+					   	{
+					   		for (int i = GetIndex(1, 1) ; i <= GetIndex(1, sizeOfGrid); i++) 
+					   		{
+					   			if ( connect.IsConnected( GetIndex(row, col), i ) ==  true ) 
+						   		{
+					   						isPercolated= true;
+					   						return true;
+						   		}
+							}
+					   	}
+					   		return false;
+				   }
+				   
+			       // this method converts 2d array into 1d array
+				   public int GetIndex(int row, int col) 
+				   {		
+					   			int index = grid.length * row + col ;
+					   			return index;
+				   }
+				   public static void main(String[] args)
+				   {
+						      Percolation percolation = new Percolation(sizeOfGrid);
+						      while( percolation.numberOfOpenSites() < sizeOfGrid * sizeOfGrid)
+						      {
+							    	  int row = (int)( Math.random() * sizeOfGrid ) + 1;
+							   		  int col = (int) ( Math.random() * sizeOfGrid ) + 1;
+							   		  percolation.open(row, col);
+							   		  
+							   		  if (percolation.percolates() == true)
+							   		  {
+							   			  		break;
+							   		  }
+						      }
+						      
+				   }
+				   
+				
+}
